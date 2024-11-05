@@ -1,9 +1,11 @@
 package dvi.proyectoTarea.recursos.dataaccess;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import dvi.proyectoTarea.recursos.objetos.Intent;
 import dvi.proyectoTarea.recursos.objetos.Review;
 import dvi.proyectoTarea.recursos.objetos.Usuari;
-import java.nio.charset.StandardCharsets;
+import java.io.File;
+import java.io.FileReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -12,6 +14,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -23,17 +27,19 @@ public class DataAccess {
         Connection connection = null;
         Properties properties = new Properties();
         try {
-            //properties.load(DataAccess.class.getClassLoader().getResourceAsStream("properties/application.properties"));
-            //connection = DriverManager.getConnection(properties.getProperty("connectionUrl"));
-            String connectionUrl = "jdbc:sqlserver://localhost:1433;database=simulapdb;user=sa;password=Pwd1234.;encrypt=false;loginTimeout=10;";
-            String connectionUrlAzure = "jdbc:sqlserver://simulapsqlserver.database.windows.net:1433;database=simulapdb;user=simulapdbadmin@simulapsqlserver;password=Pwd1234.;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;";
-
-            //connection = DriverManager.getConnection(connectionUrl);
-            connection = DriverManager.getConnection(connectionUrlAzure);
-
+            properties.load(new FileReader(new File("src/main/java/dvi/proyectoTarea/recursos/propiedades/application.properties")));
         } catch (Exception e) {
+            System.out.println("No existe archivo properties");
             e.printStackTrace();
         }
+        
+        String coString = properties.getProperty("conexion");
+        try {
+            connection = DriverManager.getConnection(coString);
+        } catch (SQLException ex) {
+            Logger.getLogger(DataAccess.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         return connection;
     }
 
@@ -55,6 +61,31 @@ public class DataAccess {
             e.printStackTrace();
         }
         return user;
+    }
+    
+    public int tryLogin(String user, char[] pass){
+        try {
+            Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Usuaris WHERE Email = ?");
+            stmt.setString(1, user);
+            ResultSet rs = stmt.executeQuery();
+            
+            
+            
+
+            if (rs.next()) {
+                String storedPassword = rs.getString("PasswordHash");
+                var resultado = BCrypt.verifyer().verify(pass,storedPassword);
+                if (resultado.verified) {
+                    if (rs.getBoolean("isInstructor")) {
+                        return 1; //log instructor
+                    }
+                } else return 2; //No log password invalida
+            } 
+        } catch (SQLException ex) {
+            Logger.getLogger(DataAccess.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 3;//No log no usuario
     }
 
     public ArrayList<Usuari> getAllUsers() {
