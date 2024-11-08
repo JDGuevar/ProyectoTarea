@@ -4,8 +4,16 @@
  */
 package dvi.proyectoTarea.ventanas;
 
+import dvi.proyectoTarea.recursos.dataaccess.DataAccess;
+import dvi.proyectoTarea.recursos.objetos.Intent;
+import dvi.proyectoTarea.recursos.objetos.Review;
+import dvi.proyectoTarea.recursos.objetos.Usuari;
 import java.awt.Desktop;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.DefaultCellEditor;
+import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -23,19 +31,95 @@ public class Principal extends javax.swing.JFrame {
         jPanel1.setVisible(false);
 
     }
-    
-    private void initTables(){
+
+    private void initTables() {
         DefaultTableModel dtm1 = new DefaultTableModel();
-        dtm1.setColumnIdentifiers(new String[]{"Intent","Exercici","Usuari"});
-        pendingIntentTable.setModel(dtm1);
-        
+        dtm1.setColumnIdentifiers(new String[]{"Intent","Usuari", "Exercici","Inici","Estat"});
+        intentTable.setModel(dtm1);
+
         DefaultTableModel dtm2 = new DefaultTableModel();
         dtm2.setColumnIdentifiers(new String[]{"Usuari", "ID"});
         userTable.setModel(dtm2);
+
+        tablasNoEditables();
+        cargarUserTable();
+        cargarPendingIntentTable();
+    }
+
+    private void tablasNoEditables() {
+        JTextField tf = new JTextField();
+        tf.setEditable(false);
+        DefaultCellEditor editor = new DefaultCellEditor(tf);
+        intentTable.setDefaultEditor(Object.class, editor);
+        userTable.setDefaultEditor(Object.class, editor);
+
+    }
+
+    private void cargarUserTable() {
+        DataAccess dataAccess = new DataAccess();
+        List<Object[]> userData = dataAccess.getUserData();
+        DefaultTableModel dtm = (DefaultTableModel) userTable.getModel();
+        dtm.setRowCount(0); // Clear the table before loading new data
+        for (Object[] row : userData) {
+            dtm.addRow(row);
+        }
+    }
+
+    private void cargarIntentTablePU(int id) {
+        DataAccess dataAccess = new DataAccess();
+        ArrayList<Intent> Intents = dataAccess.getAttemptsPerUser(id);
+        List<Object[]> IntentData= dataAccess.getIntentData(Intents);
+        DefaultTableModel dtm = (DefaultTableModel) intentTable.getModel();
+        dtm.setRowCount(0); // Clear the table before loading new data
+        for (Object[] row : IntentData) {
+            dtm.addRow(row);
+        }
         
-        DefaultTableModel dtm3 = new DefaultTableModel();
-        dtm3.setColumnIdentifiers(new String[]{"Exercici","Usuari","Valoracio","Comentari"});
-        intentTable.setModel(dtm3);
+        pintarTabla();
+
+        if (intentTable.getRowCount() > 0) {
+            intentTable.setRowSelectionInterval(0, 0);
+        }
+    }
+
+    private void cargarIntentTable() {
+        DataAccess dataAccess = new DataAccess();
+        ArrayList<Intent> Intents = dataAccess.getAttempts();
+        List<Object[]> IntentData= dataAccess.getIntentData(Intents);
+        DefaultTableModel dtm = (DefaultTableModel) intentTable.getModel();
+        dtm.setRowCount(0); // Clear the table before loading new data
+        for (Object[] row : IntentData) {
+            dtm.addRow(row);
+        }
+        
+        pintarTabla();
+        if (intentTable.getRowCount() > 0) {
+            intentTable.setRowSelectionInterval(0, 0);
+        }
+    }
+
+    private void cargarPendingIntentTable() {
+        DataAccess dataAccess = new DataAccess();
+        ArrayList<Intent> pendingIntent = dataAccess.getAttemptsPendingReview();
+        List<Object[]> pendingIntentData= dataAccess.getIntentData(pendingIntent);
+        DefaultTableModel dtm = (DefaultTableModel) intentTable.getModel();
+        dtm.setRowCount(0); // Clear the table before loading new data
+        for (Object[] row : pendingIntentData) {
+            dtm.addRow(row);
+        }
+        
+        pintarTabla();
+        if (intentTable.getRowCount() > 0) {
+            intentTable.setRowSelectionInterval(0, 0);
+        }
+    }
+
+    private void pintarTabla(){
+        
+    }
+
+    private void cargarVideo(String ruta) {
+
     }
 
     /**
@@ -50,18 +134,16 @@ public class Principal extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         LoginButton = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
+        Image = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        logout = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        pendingIntentTable = new javax.swing.JTable();
-        jPanel3 = new javax.swing.JPanel();
+        intentTable = new javax.swing.JTable();
+        videoPanel = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         userTable = new javax.swing.JTable();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        intentTable = new javax.swing.JTable();
+        allIntentsButton = new javax.swing.JButton();
+        pendingIntentsButton = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
@@ -95,21 +177,22 @@ public class Principal extends javax.swing.JFrame {
         });
         jPanel2.add(LoginButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(542, 600, 130, -1));
 
-        jLabel1.setIcon(new javax.swing.ImageIcon("src/main/java/dvi/proyectoTarea/imagenes/logoMinima.png"));
-        jLabel1.setAlignmentY(0.0F);
-        jLabel1.setFocusable(false);
-        jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(4, 0, 1200, 780));
+        Image.setIcon(new javax.swing.ImageIcon("src/main/java/dvi/proyectoTarea/imagenes/logoMinima.png"));
+        Image.setAlignmentY(0.0F);
+        Image.setFocusable(false);
+        jPanel2.add(Image, new org.netbeans.lib.awtextra.AbsoluteConstraints(4, 0, 1200, 780));
 
         getContentPane().add(jPanel2);
         jPanel2.setBounds(0, 0, 1200, 780);
 
-        jButton1.setText("jButton1");
+        logout.setText("Log Out");
+        logout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                logoutActionPerformed(evt);
+            }
+        });
 
-        jButton2.setText("jButton1");
-
-        jButton3.setText("jButton1");
-
-        pendingIntentTable.setModel(new javax.swing.table.DefaultTableModel(
+        intentTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -120,16 +203,22 @@ public class Principal extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane1.setViewportView(pendingIntentTable);
+        intentTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        intentTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                intentTableMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(intentTable);
 
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout videoPanelLayout = new javax.swing.GroupLayout(videoPanel);
+        videoPanel.setLayout(videoPanelLayout);
+        videoPanelLayout.setHorizontalGroup(
+            videoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 719, Short.MAX_VALUE)
         );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        videoPanelLayout.setVerticalGroup(
+            videoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 0, Short.MAX_VALUE)
         );
 
@@ -144,20 +233,28 @@ public class Principal extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        userTable.setFocusable(false);
+        userTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        userTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                userTableMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(userTable);
 
-        intentTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+        allIntentsButton.setText("Tots");
+        allIntentsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                allIntentsButtonActionPerformed(evt);
             }
-        ));
-        jScrollPane3.setViewportView(intentTable);
+        });
+
+        pendingIntentsButton.setText("Pendents");
+        pendingIntentsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pendingIntentsButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -166,20 +263,22 @@ public class Principal extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(12, 12, 12)
-                        .addComponent(jButton1)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton3))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 278, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(videoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE))
-                    .addComponent(jScrollPane3))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(41, 41, 41)
+                                .addComponent(logout, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(31, 31, 31)
+                                .addComponent(allIntentsButton)
+                                .addGap(70, 70, 70)
+                                .addComponent(pendingIntentsButton)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -187,20 +286,16 @@ public class Principal extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 484, Short.MAX_VALUE)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane2))
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(126, 126, 126)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton1)
-                            .addComponent(jButton2)
-                            .addComponent(jButton3))
-                        .addContainerGap(91, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 363, Short.MAX_VALUE)
+                    .addComponent(videoPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(allIntentsButton)
+                    .addComponent(pendingIntentsButton))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 164, Short.MAX_VALUE)
+                .addComponent(logout, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(130, 130, 130))
         );
 
         getContentPane().add(jPanel1);
@@ -241,6 +336,36 @@ public class Principal extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jLabel2MouseClicked
 
+    private void userTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_userTableMouseClicked
+        // TODO add your handling code here:
+        int selectedRow = userTable.getSelectedRow();
+        if (selectedRow != -1) {
+            int id = (int) userTable.getValueAt(selectedRow, 1); // Assuming the ID is in the second column (index 1)
+            cargarIntentTablePU(id);
+        }
+
+    }//GEN-LAST:event_userTableMouseClicked
+
+    private void intentTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_intentTableMouseClicked
+        // TODO add your handling code here:
+        int selectedRow = intentTable.getSelectedRow();
+    }//GEN-LAST:event_intentTableMouseClicked
+
+    private void logoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutActionPerformed
+        // TODO add your handling code here:
+        jPanel1.setVisible(false);
+        jPanel2.setVisible(true);
+    }//GEN-LAST:event_logoutActionPerformed
+
+    private void allIntentsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_allIntentsButtonActionPerformed
+        // TODO add your handling code here:
+        cargarIntentTable();
+    }//GEN-LAST:event_allIntentsButtonActionPerformed
+
+    private void pendingIntentsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pendingIntentsButtonActionPerformed
+        // TODO add your handling code here:
+        cargarPendingIntentTable();
+    }//GEN-LAST:event_pendingIntentsButtonActionPerformed
     /**
      * @param args the command line arguments
      */
@@ -277,12 +402,10 @@ public class Principal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel Image;
     private javax.swing.JButton LoginButton;
+    private javax.swing.JButton allIntentsButton;
     private javax.swing.JTable intentTable;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
@@ -290,11 +413,11 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JMenuBar jMenuBar1;
     public javax.swing.JPanel jPanel1;
     public javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTable pendingIntentTable;
+    private javax.swing.JButton logout;
+    private javax.swing.JButton pendingIntentsButton;
     private javax.swing.JTable userTable;
+    private javax.swing.JPanel videoPanel;
     // End of variables declaration//GEN-END:variables
 }

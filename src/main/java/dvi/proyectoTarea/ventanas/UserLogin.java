@@ -4,7 +4,6 @@
  */
 package dvi.proyectoTarea.ventanas;
 
-import at.favre.lib.crypto.bcrypt.BCrypt;
 import dvi.proyectoTarea.recursos.dataaccess.DataAccess;
 import javax.swing.JOptionPane;
 
