@@ -122,6 +122,7 @@ public class UserLogin extends javax.swing.JFrame {
             case 1 -> {
                 papi.jPanel2.setVisible(false);
                 papi.jPanel1.setVisible(true);
+                papi.setTrainerId(da.getUserId(email));
                 this.dispose();
                 break;
             }

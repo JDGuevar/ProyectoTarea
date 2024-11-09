@@ -380,4 +380,55 @@ public class DataAccess {
         }
         return IntentData;
     }
+
+    public String getVideoFile(int id){
+        String sql = "SELECT VideoFile FROM Intents WHERE Id = ?";
+        String videoFile = "";
+        try (Connection connection = getConnection(); PreparedStatement selectStatement = connection.prepareStatement(sql);) {
+            selectStatement.setInt(1, id);
+            ResultSet resultSet = selectStatement.executeQuery();
+            while (resultSet.next()) {
+                videoFile = resultSet.getString("VideoFile");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return videoFile;
+
+    }
+
+    public void deleteIntent(int id) {
+        String sql = "DELETE FROM Intents WHERE Id = ?";
+        try (Connection conn = getConnection(); PreparedStatement deleteStatement = conn.prepareStatement(sql)) {
+            deleteStatement.setInt(1, id);
+            deleteStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteReview(int id) {
+        String sql = "DELETE FROM Review WHERE IdIntent = ?";
+        try (Connection conn = getConnection(); PreparedStatement deleteStatement = conn.prepareStatement(sql)) {
+            deleteStatement.setInt(1, id);
+            deleteStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public int getUserId(String email) {
+        String sql = "SELECT Id FROM Usuaris WHERE Email = ?";
+        int id = 0;
+        try (Connection connection = getConnection(); PreparedStatement selectStatement = connection.prepareStatement(sql);) {
+            selectStatement.setString(1, email);
+            ResultSet resultSet = selectStatement.executeQuery();
+            while (resultSet.next()) {
+                id = resultSet.getInt("Id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return id;
+    }
 }
