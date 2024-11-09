@@ -15,7 +15,6 @@
                 <exec.appArgs></exec.appArgs>
                 <exec.mainClass>dvi.proyectoTarea.ventanas.Principal</exec.mainClass>
                 <exec.executable>java</exec.executable>
-                <exec.workingdir>C:\Users\Goldini\Documents\GitHub\ProyectoTarea</exec.workingdir>
             </properties>
         </action>
         <action>
@@ -34,7 +33,6 @@
                 <exec.mainClass>dvi.proyectoTarea.ventanas.Principal</exec.mainClass>
                 <exec.executable>java</exec.executable>
                 <jpda.listen>true</jpda.listen>
-                <exec.workingdir>C:\Users\Goldini\Documents\GitHub\ProyectoTarea</exec.workingdir>
             </properties>
         </action>
         <action>
@@ -52,7 +50,6 @@
                 <exec.mainClass>dvi.proyectoTarea.ventanas.Principal</exec.mainClass>
                 <exec.executable>java</exec.executable>
                 <exec.appArgs></exec.appArgs>
-                <exec.workingdir>C:\Users\Goldini\Documents\GitHub\ProyectoTarea</exec.workingdir>
             </properties>
         </action>
     </actions>
