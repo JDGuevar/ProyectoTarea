@@ -383,7 +383,7 @@ public class Principal extends javax.swing.JFrame {
             }
         });
         jPanel1.add(jSlider1);
-        jSlider1.setBounds(960, 480, 200, 16);
+        jSlider1.setBounds(960, 480, 200, 20);
 
         delReview.setText("Borra Review");
         delReview.addActionListener(new java.awt.event.ActionListener() {

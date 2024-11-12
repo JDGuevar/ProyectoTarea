@@ -398,8 +398,16 @@ public class DataAccess {
     }
 
     public void deleteIntent(int id) {
-        String sql = "DELETE FROM Intents WHERE Id = ?";
-        try (Connection conn = getConnection(); PreparedStatement deleteStatement = conn.prepareStatement(sql)) {
+        String sql1 = "DELETE FROM Review WHERE IdIntent = ?";
+        String sql2 = "DELETE FROM Intents WHERE Id = ?";
+        try (Connection conn = getConnection(); PreparedStatement deleteStatement = conn.prepareStatement(sql1)) {
+            deleteStatement.setInt(1, id);
+            deleteStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        try (Connection conn = getConnection(); PreparedStatement deleteStatement = conn.prepareStatement(sql2)) {
             deleteStatement.setInt(1, id);
             deleteStatement.executeUpdate();
         } catch (SQLException e) {
